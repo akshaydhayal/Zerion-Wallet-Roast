@@ -13,11 +13,11 @@ export default function LoadingAnimation() {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto text-center py-16">
+    <div className="max-w-xl mx-auto text-center py-8">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="glass rounded-3xl p-12"
+        className="glass rounded-2xl p-8"
       >
         {/* Animated Fire Icon */}
         <motion.div
@@ -30,9 +30,9 @@ export default function LoadingAnimation() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="flex justify-center mb-8"
+          className="flex justify-center mb-6"
         >
-          <Flame className="w-24 h-24 text-orange-500" />
+          <Flame className="w-16 h-16 text-orange-500" />
         </motion.div>
 
         {/* Loading Text */}
@@ -40,9 +40,9 @@ export default function LoadingAnimation() {
           key={Math.random()}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
+          className="space-y-3"
         >
-          <h2 className="text-3xl font-bold text-white mb-6">
+          <h2 className="text-2xl font-bold text-white mb-4">
             Generating Your Roast...
           </h2>
 
@@ -53,7 +53,7 @@ export default function LoadingAnimation() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.3 }}
-              className="text-gray-300 text-lg"
+              className="text-gray-300 text-base"
             >
               {text}
             </motion.p>
@@ -61,7 +61,7 @@ export default function LoadingAnimation() {
         </motion.div>
 
         {/* Progress Bar */}
-        <div className="mt-8 w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+        <div className="mt-6 w-full bg-gray-700 rounded-full h-1.5 overflow-hidden">
           <motion.div
             className="h-full bg-gradient-to-r from-orange-500 to-pink-600"
             initial={{ width: "0%" }}
@@ -70,7 +70,7 @@ export default function LoadingAnimation() {
           />
         </div>
 
-        <p className="text-gray-400 text-sm mt-6">
+        <p className="text-gray-400 text-xs mt-4">
           This will only take a moment...
         </p>
       </motion.div>

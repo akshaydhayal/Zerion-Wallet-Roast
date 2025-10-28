@@ -9,17 +9,27 @@ import {
 const ZERION_API_BASE = "https://api.zerion.io/v1";
 const API_KEY = process.env.NEXT_PUBLIC_ZERION_API_KEY;
 
+console.log("🔑 API Key Debug:", {
+  hasKey: !!API_KEY,
+  keyLength: API_KEY?.length,
+  keyStart: API_KEY?.substring(0, 10) + "...",
+  env: process.env.NODE_ENV
+});
+
 if (!API_KEY) {
   console.warn("⚠️ ZERION API KEY is not set. Please add NEXT_PUBLIC_ZERION_API_KEY to your .env.local file");
 }
 
 const headers = {
-  "Authorization": `Basic ${API_KEY}`,
+  "Authorization": `Basic ${btoa(`${API_KEY}:`)}`,
 };
 
 export async function fetchWalletData(walletAddress: string): Promise<WalletData> {
   try {
-    // Fetch portfolio overview
+    console.log("🌐 Making API request to:", `${ZERION_API_BASE}/wallets/${walletAddress}/portfolio?currency=usd`);
+    console.log("📋 Headers being sent:", headers);
+    
+    // Fetch portfolio overview (ONLY THIS FOR NOW)
     const portfolioResponse = await fetch(
       `${ZERION_API_BASE}/wallets/${walletAddress}/portfolio?currency=usd`,
       { headers }
@@ -31,6 +41,8 @@ export async function fetchWalletData(walletAddress: string): Promise<WalletData
 
     const portfolio: ZerionPortfolio = await portfolioResponse.json();
 
+    // TODO: Uncomment these later when we want to use all routes
+    /*
     // Fetch positions (top holdings)
     const positionsResponse = await fetch(
       `${ZERION_API_BASE}/wallets/${walletAddress}/positions?filter[positions]=only_simple&sort=value&page[size]=10&currency=usd`,
@@ -71,10 +83,27 @@ export async function fetchWalletData(walletAddress: string): Promise<WalletData
     const transactions: ZerionTransactionsResponse = transactionsResponse.ok
       ? await transactionsResponse.json()
       : { data: [] };
+    */
 
-    // Process the data
-    const portfolioValue = parseFloat(portfolio.data.attributes.total.quantity) || 0;
+    // Process the data (SIMPLIFIED - ONLY PORTFOLIO DATA FOR NOW)
+    
+    // Get portfolio value from the API response
+    let portfolioValue = 0;
+    
+    // Try different ways to get portfolio value
+    if (portfolio.data?.attributes?.total_balance) {
+      portfolioValue = parseFloat(portfolio.data.attributes.total_balance) || 0;
+    } else if (portfolio.data?.attributes?.total?.quantity) {
+      portfolioValue = parseFloat(portfolio.data.attributes.total.quantity) || 0;
+    } else if (portfolio.data?.attributes?.total?.value) {
+      portfolioValue = parseFloat(portfolio.data.attributes.total.value) || 0;
+    } else if (portfolio.data?.attributes?.positions_distribution_by_type) {
+      const distribution = portfolio.data.attributes.positions_distribution_by_type;
+      portfolioValue = (distribution.wallet || 0) + (distribution.staked || 0) + (distribution.deposited || 0);
+    }
 
+    // TODO: Uncomment these when we use all routes
+    /*
     const topHoldings = positions.data
       .filter((pos) => pos.attributes.flags.displayable && pos.attributes.value)
       .slice(0, 5)
@@ -114,23 +143,26 @@ export async function fetchWalletData(walletAddress: string): Promise<WalletData
     } else if (transactions.data.length > 5) {
       tradingFrequency = "hodler";
     }
+    */
 
+    // SIMPLIFIED WALLET DATA - ONLY PORTFOLIO INFO FOR NOW
     const walletData: WalletData = {
       portfolioValue,
-      topHoldings,
+      // TODO: Uncomment these when we use all routes
+      topHoldings: [], // positions.data.filter(...).map(...)
       pnl: {
-        totalProfit: pnl.data.attributes.total_profit,
-        totalProfitPercent: pnl.data.attributes.total_profit_percent,
-        realizedProfit: pnl.data.attributes.total_realized_profit,
-        unrealizedProfit: pnl.data.attributes.total_unrealized_profit,
+        totalProfit: 0, // pnl.data.attributes.total_profit
+        totalProfitPercent: 0, // pnl.data.attributes.total_profit_percent
+        realizedProfit: 0, // pnl.data.attributes.total_realized_profit
+        unrealizedProfit: 0, // pnl.data.attributes.total_unrealized_profit
       },
       transactionStats: {
-        totalTransactions: transactions.data.length,
-        swaps,
-        transfers,
-        recentActivity,
+        totalTransactions: 0, // transactions.data.length
+        swaps: 0, // transactions.data.filter(...).length
+        transfers: 0, // transactions.data.filter(...).length
+        recentActivity: 0, // transactions.data.filter(...).length
       },
-      tradingFrequency,
+      tradingFrequency: "ghost", // calculated from transactions
       distribution: {
         wallet: portfolio.data.attributes.positions_distribution_by_type.wallet || 0,
         staked: portfolio.data.attributes.positions_distribution_by_type.staked || 0,

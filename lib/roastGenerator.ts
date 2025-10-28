@@ -1,6 +1,17 @@
 import { WalletData, RoastResult } from "@/types";
+import { generateAIRoast } from "./aiRoastGenerator";
 
-export function generateRoast(walletData: WalletData): RoastResult {
+export async function generateRoast(walletData: WalletData): Promise<RoastResult> {
+  // Try AI generation first, fallback to static if it fails
+  try {
+    return await generateAIRoast(walletData);
+  } catch (error) {
+    console.warn('AI roast generation failed, using static roasts:', error);
+    return generateStaticRoast(walletData);
+  }
+}
+
+export function generateStaticRoast(walletData: WalletData): RoastResult {
   const roasts: string[] = [];
   let score = 50; // Start neutral
   let personality = "";
@@ -9,9 +20,104 @@ export function generateRoast(walletData: WalletData): RoastResult {
 
   const { portfolioValue, topHoldings, pnl, transactionStats, tradingFrequency, distribution } = walletData;
 
-  // Main Roast based on trading frequency
+  // DYNAMIC MAIN ROAST - MULTIPLE VARIATIONS PER RANGE
   let mainRoast = "";
   
+  // Helper function to get random roast from array
+  const getRandomRoast = (roastArray: string[]) => {
+    return roastArray[Math.floor(Math.random() * roastArray.length)];
+  };
+
+  // Main roast based on portfolio value with multiple variations
+  if (portfolioValue === 0) {
+    const zeroRoasts = [
+      "Portfolio value: $0. At least you can't lose any more money! 📉",
+      "$0 portfolio. You're either broke or a genius who sold everything at the top. I'm betting on broke.",
+      "Zero dollars? Did you forget to add tokens or did you forget to add money? 🤔",
+      "$0.00. Congratulations, you've achieved the impossible - negative net worth in crypto!",
+      "Portfolio: $0. The only thing emptier than your wallet is your trading strategy.",
+      "Zero balance detected. You're either a ghost trader or you're really good at losing money."
+    ];
+    mainRoast = getRandomRoast(zeroRoasts);
+    score -= 30;
+    personality = "Crypto Ghost";
+    personalityEmoji = "👻";
+    badge = "Wallet Collector";
+  } else if (portfolioValue < 10) {
+    const smallRoasts = [
+      `$${portfolioValue.toFixed(2)} portfolio. That's not even a decent lunch. Did you sell at the bottom?`,
+      `$${portfolioValue.toFixed(2)}? You could buy more with a McDonald's Happy Meal. 🍔`,
+      `$${portfolioValue.toFixed(2)} portfolio. I've seen bigger tips at a coffee shop.`,
+      `$${portfolioValue.toFixed(2)}. At this rate, you'll be a millionaire in... never.`,
+      `$${portfolioValue.toFixed(2)} portfolio. You're not investing, you're collecting digital pennies.`,
+      `$${portfolioValue.toFixed(2)}. Your portfolio is smaller than my last Uber ride.`
+    ];
+    mainRoast = getRandomRoast(smallRoasts);
+    score -= 20;
+    personality = "Budget Trader";
+    personalityEmoji = "🍜";
+    badge = "Ramen Noodle Investor";
+  } else if (portfolioValue < 100) {
+    const mediumRoasts = [
+      `$${portfolioValue.toFixed(2)} portfolio. You're practically living on ramen noodles. Keep grinding, I guess?`,
+      `$${portfolioValue.toFixed(2)}. Not quite broke, not quite rich. Just... existing.`,
+      `$${portfolioValue.toFixed(2)} portfolio. You're the middle child of crypto - forgotten but still trying.`,
+      `$${portfolioValue.toFixed(2)}. At least you can afford instant noodles now! 🍜`,
+      `$${portfolioValue.toFixed(2)} portfolio. You're not poor, you're just... economically challenged.`,
+      `$${portfolioValue.toFixed(2)}. Your portfolio is as exciting as watching paint dry.`
+    ];
+    mainRoast = getRandomRoast(mediumRoasts);
+    score -= 10;
+    personality = "Casual Investor";
+    personalityEmoji = "😐";
+    badge = "Middle of the Pack";
+  } else if (portfolioValue < 1000) {
+    const decentRoasts = [
+      `$${portfolioValue.toFixed(2)} portfolio. Not bad, but also... not impressive. You're the middle child of crypto.`,
+      `$${portfolioValue.toFixed(2)}. You're not broke, but you're not quitting your day job either.`,
+      `$${portfolioValue.toFixed(2)} portfolio. Decent, but your mom still asks if you're 'doing that computer money thing'.`,
+      `$${portfolioValue.toFixed(2)}. You're doing okay, I guess. Mediocre, but okay.`,
+      `$${portfolioValue.toFixed(2)} portfolio. You're the personification of 'meh' in crypto.`,
+      `$${portfolioValue.toFixed(2)}. Not terrible, not great. Just... there. Like a background character.`
+    ];
+    mainRoast = getRandomRoast(decentRoasts);
+    score += 10;
+    personality = "Moderate Investor";
+    personalityEmoji = "📊";
+    badge = "Steady Eddie";
+  } else if (portfolioValue < 10000) {
+    const goodRoasts = [
+      `$${portfolioValue.toFixed(2)} portfolio. Okay, okay. You've got some bags. Still not quitting your day job though.`,
+      `$${portfolioValue.toFixed(2)}. Now we're talking! You might actually know what you're doing.`,
+      `$${portfolioValue.toFixed(2)} portfolio. Respect. You're not just playing with pocket change anymore.`,
+      `$${portfolioValue.toFixed(2)}. You've graduated from ramen to... slightly better ramen. 🍜`,
+      `$${portfolioValue.toFixed(2)} portfolio. You're doing something right. Or you got really lucky.`,
+      `$${portfolioValue.toFixed(2)}. Your portfolio is finally worth bragging about... to your cat.`
+    ];
+    mainRoast = getRandomRoast(goodRoasts);
+    score += 20;
+    personality = "Diamond Hands";
+    personalityEmoji = "💎";
+    badge = "HODL Master";
+  } else {
+    const whaleRoasts = [
+      `$${portfolioValue.toFixed(2)} portfolio. Look at you, whale! Or wait... is this your parents' money?`,
+      `$${portfolioValue.toFixed(2)}. Damn, save some gains for the rest of us! 🐋`,
+      `$${portfolioValue.toFixed(2)} portfolio. You're either a genius or you inherited this. I'm betting on inheritance.`,
+      `$${portfolioValue.toFixed(2)}. Okay, you win. You can stop flexing now.`,
+      `$${portfolioValue.toFixed(2)} portfolio. You're the reason why people think crypto is easy money.`,
+      `$${portfolioValue.toFixed(2)}. Your portfolio is bigger than my life savings. And my life.`
+    ];
+    mainRoast = getRandomRoast(whaleRoasts);
+    score += 30;
+    personality = "Crypto Whale";
+    personalityEmoji = "🐋";
+    badge = "Whale Alert";
+  }
+
+  // TODO: Uncomment this when we use all API routes
+  /*
+  // Main Roast based on trading frequency
   switch (tradingFrequency) {
     case "degen":
       mainRoast = "Holy shit, you've made " + transactionStats.recentActivity + " transactions in the last week. Even professional traders take a break. Your fingers must be tired from panic selling.";
@@ -49,7 +155,77 @@ export function generateRoast(walletData: WalletData): RoastResult {
       badge = "Wallet Collector";
       break;
   }
+  */
 
+  // DYNAMIC SUB-ROASTS - MULTIPLE VARIATIONS FOR EACH SCENARIO
+  
+  // Staking roasts based on distribution with multiple variations
+  if (distribution.staked > 0 && portfolioValue > 0) {
+    const stakedPercent = (distribution.staked / portfolioValue * 100);
+    if (stakedPercent < 1 && portfolioValue < 10) {
+      const smallStakeRoasts = [
+        `You staked $${(portfolioValue * stakedPercent / 100).toFixed(2)}. Congrats on securing the network, soldier. 🪖`,
+        `$${(portfolioValue * stakedPercent / 100).toFixed(2)} staked? That's not securing the network, that's securing a parking spot.`,
+        `You staked $${(portfolioValue * stakedPercent / 100).toFixed(2)}. The network thanks you for your... contribution?`,
+        `$${(portfolioValue * stakedPercent / 100).toFixed(2)} staked. You're helping secure the network, one penny at a time.`
+      ];
+      roasts.push(getRandomRoast(smallStakeRoasts));
+      score -= 5;
+    } else if (stakedPercent > 50) {
+      const heavyStakeRoasts = [
+        `${stakedPercent.toFixed(0)}% staked. Look at you, earning that sweet 5% APY. Retire by 2150! 🚀`,
+        `${stakedPercent.toFixed(0)}% staked? You're either very confident or very desperate.`,
+        `${stakedPercent.toFixed(0)}% staked. At least you're getting some yield while losing money.`,
+        `${stakedPercent.toFixed(0)}% staked. You're basically running your own validator at this point.`
+      ];
+      roasts.push(getRandomRoast(heavyStakeRoasts));
+      score += 10;
+    } else if (stakedPercent > 20) {
+      const moderateStakeRoasts = [
+        `${stakedPercent.toFixed(0)}% staked. At least you're helping secure the network while losing money.`,
+        `${stakedPercent.toFixed(0)}% staked. You're doing your part for decentralization. Sort of.`,
+        `${stakedPercent.toFixed(0)}% staked. Not bad, but you could be earning more in a savings account.`,
+        `${stakedPercent.toFixed(0)}% staked. You're getting some yield, which is more than most people.`
+      ];
+      roasts.push(getRandomRoast(moderateStakeRoasts));
+      score += 5;
+    }
+  }
+
+  // Distribution analysis roasts with variations
+  if (distribution.wallet > 0 && portfolioValue > 0) {
+    const walletPercent = (distribution.wallet / portfolioValue * 100);
+    if (walletPercent > 90) {
+      const hodlRoasts = [
+        `${walletPercent.toFixed(0)}% sitting in wallet. Not staking, not DeFi, just... holding. Bold strategy.`,
+        `${walletPercent.toFixed(0)}% in wallet. You're the definition of 'diamond hands' - or just lazy.`,
+        `${walletPercent.toFixed(0)}% sitting idle. Your money is more boring than you are.`,
+        `${walletPercent.toFixed(0)}% in wallet. You're not investing, you're just... storing. Like a digital piggy bank.`
+      ];
+      roasts.push(getRandomRoast(hodlRoasts));
+      score -= 5;
+    }
+  }
+
+  // Add some random general roasts based on portfolio value for extra spice
+  const randomGeneralRoasts = [
+    "Your portfolio is like a participation trophy - you showed up, but that's about it.",
+    "I've seen more action in a library than in your trading history.",
+    "Your wallet is so empty, even dust doesn't want to settle in it.",
+    "You're not a trader, you're a collector of bad decisions.",
+    "Your portfolio is proof that 'HODL' is just an excuse for not knowing what you're doing.",
+    "You're the reason why people think crypto is gambling.",
+    "Your trading strategy is about as sophisticated as a coin flip.",
+    "You're not investing, you're just throwing money at random tokens and hoping for the best."
+  ];
+
+  // Add 1-2 random roasts for extra variety (but not too many)
+  if (Math.random() < 0.3) { // 30% chance
+    roasts.push(getRandomRoast(randomGeneralRoasts));
+  }
+
+  // TODO: Uncomment these when we use all API routes
+  /*
   // Portfolio value roasts
   if (portfolioValue === 0) {
     roasts.push("Portfolio value: $0. At least you can't lose any more money! 📉");
@@ -133,6 +309,50 @@ export function generateRoast(walletData: WalletData): RoastResult {
   } else if (transactionStats.swaps > 20) {
     roasts.push(`${transactionStats.swaps} swaps. The DEX thanks you for the fees. Your wallet doesn't. 💸`);
     score -= 5;
+  }
+  */
+
+  // DYNAMIC PERSONALITY VARIATIONS - Add some randomness to personalities too
+  const personalityVariations: { [key: string]: { personalities: string[], emojis: string[], badges: string[] } } = {
+    "Crypto Ghost": {
+      personalities: ["Crypto Ghost", "Digital Phantom", "Wallet Specter", "Blockchain Ghost", "Crypto Casper"],
+      emojis: ["👻", "👻", "👻", "👻", "👻"],
+      badges: ["Wallet Collector", "Ghost Trader", "Empty Wallet Master", "Zero Balance Champion", "Digital Ghost"]
+    },
+    "Budget Trader": {
+      personalities: ["Budget Trader", "Penny Pincher", "Micro Investor", "Small Change Specialist", "Budget Crypto"],
+      emojis: ["🍜", "🍜", "🍜", "🍜", "🍜"],
+      badges: ["Ramen Noodle Investor", "Budget Baller", "Small Change Champion", "Penny Trader", "Micro Portfolio Master"]
+    },
+    "Casual Investor": {
+      personalities: ["Casual Investor", "Weekend Warrior", "Part-Time Trader", "Casual Crypto", "Side Hustle Investor"],
+      emojis: ["😐", "😐", "😐", "😐", "😐"],
+      badges: ["Middle of the Pack", "Casual Trader", "Weekend Warrior", "Part-Time Investor", "Side Hustle Master"]
+    },
+    "Moderate Investor": {
+      personalities: ["Moderate Investor", "Steady Eddie", "Balanced Trader", "Moderate Crypto", "Steady Investor"],
+      emojis: ["📊", "📊", "📊", "📊", "📊"],
+      badges: ["Steady Eddie", "Moderate Master", "Balanced Trader", "Steady Investor", "Moderate Champion"]
+    },
+    "Diamond Hands": {
+      personalities: ["Diamond Hands", "HODL Master", "Long-term Holder", "Diamond Investor", "HODL Champion"],
+      emojis: ["💎", "💎", "💎", "💎", "💎"],
+      badges: ["HODL Master", "Diamond Hands", "Long-term Holder", "HODL Champion", "Diamond Investor"]
+    },
+    "Crypto Whale": {
+      personalities: ["Crypto Whale", "Big Fish", "Whale Investor", "Crypto Titan", "Blockchain Whale"],
+      emojis: ["🐋", "🐋", "🐋", "🐋", "🐋"],
+      badges: ["Whale Alert", "Big Fish", "Whale Investor", "Crypto Titan", "Blockchain Whale"]
+    }
+  };
+
+  // Apply personality variations if available
+  if (personalityVariations[personality]) {
+    const variations = personalityVariations[personality];
+    const randomIndex = Math.floor(Math.random() * variations.personalities.length);
+    personality = variations.personalities[randomIndex];
+    personalityEmoji = variations.emojis[randomIndex];
+    badge = variations.badges[randomIndex];
   }
 
   // Ensure score is between 0-100

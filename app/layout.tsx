@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { WalletProvider } from "@/components/WalletProvider";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export const metadata: Metadata = {
   title: "Wallet Roast - Get Roasted by Your Bags",
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <WalletProvider>{children}</WalletProvider>
+        <ThemeProvider>
+          <WalletProvider>{children}</WalletProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
