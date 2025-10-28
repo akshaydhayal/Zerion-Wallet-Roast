@@ -10,15 +10,21 @@ import Footer from "@/components/Footer";
 export default function Home() {
   const { publicKey, connected } = useWallet();
   const [showRoast, setShowRoast] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string>("");
 
-  const handleGetRoasted = () => {
-    if (connected && publicKey) {
+  const handleGetRoasted = (address?: string) => {
+    // Use manual address if provided, otherwise use connected wallet
+    const addressToUse = address || (connected && publicKey ? publicKey.toString() : "");
+    
+    if (addressToUse) {
+      setWalletAddress(addressToUse);
       setShowRoast(true);
     }
   };
 
   const handleBackToHome = () => {
     setShowRoast(false);
+    setWalletAddress("");
   };
 
   return (
@@ -38,7 +44,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="container mx-auto px-4 py-8">
-            <RoastGenerator walletAddress={publicKey!.toString()} onBack={handleBackToHome} />
+            <RoastGenerator walletAddress={walletAddress} onBack={handleBackToHome} />
           </div>
         )}
         <Footer />

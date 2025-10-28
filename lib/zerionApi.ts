@@ -15,7 +15,6 @@ if (!API_KEY) {
 
 const headers = {
   "Authorization": `Basic ${API_KEY}`,
-  "Content-Type": "application/json",
 };
 
 export async function fetchWalletData(walletAddress: string): Promise<WalletData> {
