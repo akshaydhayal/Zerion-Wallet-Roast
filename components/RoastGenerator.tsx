@@ -7,6 +7,7 @@ import { fetchWalletData } from "@/lib/zerionApi";
 import { generateRoast } from "@/lib/roastGenerator";
 import { RoastResult } from "@/types";
 import RoastCard from "./RoastCard";
+import WalletAnalysis from "./WalletAnalysis";
 import LoadingAnimation from "./LoadingAnimation";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -20,7 +21,9 @@ export default function RoastGenerator({ walletAddress, onBack }: RoastGenerator
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [roast, setRoast] = useState<RoastResult | null>(null);
+  const [walletData, setWalletData] = useState<any>(null);
   const [isAIRoast, setIsAIRoast] = useState<boolean | null>(null);
+  const [activeTab, setActiveTab] = useState<'roast' | 'analysis'>('roast');
 
   const generateNewRoast = async () => {
     try {
@@ -29,23 +32,38 @@ export default function RoastGenerator({ walletAddress, onBack }: RoastGenerator
       setIsAIRoast(null);
       
       // Fetch wallet data from Zerion API
-      const walletData = await fetchWalletData(walletAddress);
+      const fetchedWalletData = await fetchWalletData(walletAddress);
+      setWalletData(fetchedWalletData);
       
       // Check if AI is available before generating
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
       const hasAI = apiKey && apiKey !== 'your_gemini_key_here';
       
       // Generate roast based on wallet data (now async with AI)
-      const roastResult = await generateRoast(walletData);
+      const roastResult = await generateRoast(fetchedWalletData);
       
       // Simulate loading for better UX (minimum 2 seconds)
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setRoast(roastResult);
       setIsAIRoast(hasAI);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error generating roast:", err);
-      setError("Failed to fetch wallet data. Please check your Zerion API key or try again later.");
+      
+      // Show specific error messages based on the error type
+      if (err.message.includes("API key")) {
+        setError("Zerion API key is missing or invalid. Please check your .env.local file.");
+      } else if (err.message.includes("authentication failed")) {
+        setError("Zerion API authentication failed. Please check your API key.");
+      } else if (err.message.includes("Wallet not found")) {
+        setError("Wallet not found in Zerion database. Try a different wallet address.");
+      } else if (err.message.includes("timeout")) {
+        setError("Request timed out. Please try again.");
+      } else if (err.message.includes("Network error")) {
+        setError("Network error. Please check your internet connection.");
+      } else {
+        setError(`Failed to fetch wallet data: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -134,14 +152,76 @@ export default function RoastGenerator({ walletAddress, onBack }: RoastGenerator
           </motion.div>
         )}
 
-        {!loading && !error && roast && (
+        {!loading && !error && roast && walletData && (
           <motion.div
-            key="roast"
+            key="content"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
+            className="space-y-6"
           >
-            <RoastCard roast={roast} walletAddress={walletAddress} onRoastAgain={generateNewRoast} isAIRoast={isAIRoast} />
+            {/* Tab Navigation */}
+            <div className="flex justify-center">
+              <div
+                className="inline-flex rounded-2xl p-1 backdrop-blur-sm border"
+                style={{
+                  backgroundColor: `${themeConfig.colors.surface}60`,
+                  borderColor: themeConfig.colors.border,
+                }}
+              >
+                <button
+                  onClick={() => setActiveTab('roast')}
+                  className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                    activeTab === 'roast' ? 'shadow-lg' : ''
+                  }`}
+                  style={{
+                    backgroundColor: activeTab === 'roast' ? themeConfig.colors.primary : 'transparent',
+                    color: activeTab === 'roast' ? themeConfig.colors.text : themeConfig.colors.textSecondary,
+                  }}
+                >
+                  🔥 Roast
+                </button>
+                <button
+                  onClick={() => setActiveTab('analysis')}
+                  className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                    activeTab === 'analysis' ? 'shadow-lg' : ''
+                  }`}
+                  style={{
+                    backgroundColor: activeTab === 'analysis' ? themeConfig.colors.primary : 'transparent',
+                    color: activeTab === 'analysis' ? themeConfig.colors.text : themeConfig.colors.textSecondary,
+                  }}
+                >
+                  📊 Analysis
+                </button>
+              </div>
+            </div>
+
+            {/* Tab Content */}
+            <AnimatePresence mode="wait">
+              {activeTab === 'roast' && (
+                <motion.div
+                  key="roast"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <RoastCard roast={roast} walletAddress={walletAddress} onRoastAgain={generateNewRoast} isAIRoast={isAIRoast} />
+                </motion.div>
+              )}
+              
+              {activeTab === 'analysis' && (
+                <motion.div
+                  key="analysis"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <WalletAnalysis walletData={walletData} walletAddress={walletAddress} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>

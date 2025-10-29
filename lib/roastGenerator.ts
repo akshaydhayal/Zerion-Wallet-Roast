@@ -18,7 +18,7 @@ export function generateStaticRoast(walletData: WalletData): RoastResult {
   let personalityEmoji = "";
   let badge = "";
 
-  const { portfolioValue, topHoldings, pnl, transactionStats, tradingFrequency, distribution } = walletData;
+  const { portfolioValue, topHoldings, pnl, transactionStats, tradingFrequency, distribution, positions } = walletData;
 
   // DYNAMIC MAIN ROAST - MULTIPLE VARIATIONS PER RANGE
   let mainRoast = "";
@@ -207,22 +207,62 @@ export function generateStaticRoast(walletData: WalletData): RoastResult {
     }
   }
 
-  // Add some random general roasts based on portfolio value for extra spice
-  const randomGeneralRoasts = [
-    "Your portfolio is like a participation trophy - you showed up, but that's about it.",
-    "I've seen more action in a library than in your trading history.",
-    "Your wallet is so empty, even dust doesn't want to settle in it.",
-    "You're not a trader, you're a collector of bad decisions.",
-    "Your portfolio is proof that 'HODL' is just an excuse for not knowing what you're doing.",
-    "You're the reason why people think crypto is gambling.",
-    "Your trading strategy is about as sophisticated as a coin flip.",
-    "You're not investing, you're just throwing money at random tokens and hoping for the best."
-  ];
+    // Positions-based roasts
+    if (positions && positions.length > 0) {
+      const verifiedTokens = positions.filter(pos => pos.verified).length;
+      const unverifiedTokens = positions.filter(pos => !pos.verified).length;
+      const totalPositions = positions.length;
+      
+      if (unverifiedTokens > verifiedTokens) {
+        const unverifiedRoasts = [
+          `${unverifiedTokens} unverified tokens? You're either a genius or you have a death wish.`,
+          `You're holding ${unverifiedTokens} unverified tokens. That's not investing, that's gambling with extra steps.`,
+          `${unverifiedTokens} unverified tokens. Your risk tolerance is either legendary or you're just reckless.`,
+          `You've got ${unverifiedTokens} unverified tokens. I respect the audacity, but maybe check what you're buying?`
+        ];
+        roasts.push(getRandomRoast(unverifiedRoasts));
+        score -= 10;
+      }
+      
+      if (totalPositions > 20) {
+        const manyPositionsRoasts = [
+          `${totalPositions} different tokens? You're not diversifying, you're collecting digital Pokemon.`,
+          `You're holding ${totalPositions} tokens. At this point, you're just hoarding digital assets.`,
+          `${totalPositions} positions? You're either a genius or you have commitment issues.`,
+          `You've got ${totalPositions} different tokens. That's not a portfolio, that's a digital garage sale.`
+        ];
+        roasts.push(getRandomRoast(manyPositionsRoasts));
+        score -= 5;
+      }
+      
+      if (totalPositions === 1) {
+        const singleTokenRoasts = [
+          "Only one token? You're either a maxi or you're just getting started. I'm betting on maxi.",
+          "One token. One. Either you're a genius or you're playing it way too safe.",
+          "Single token holder. You're either a true believer or you forgot to diversify.",
+          "One token? That's not a portfolio, that's a single bet with extra steps."
+        ];
+        roasts.push(getRandomRoast(singleTokenRoasts));
+        score += 5;
+      }
+    }
 
-  // Add 1-2 random roasts for extra variety (but not too many)
-  if (Math.random() < 0.3) { // 30% chance
-    roasts.push(getRandomRoast(randomGeneralRoasts));
-  }
+    // Add some random general roasts based on portfolio value for extra spice
+    const randomGeneralRoasts = [
+      "Your portfolio is like a participation trophy - you showed up, but that's about it.",
+      "I've seen more action in a library than in your trading history.",
+      "Your wallet is so empty, even dust doesn't want to settle in it.",
+      "You're not a trader, you're a collector of bad decisions.",
+      "Your portfolio is proof that 'HODL' is just an excuse for not knowing what you're doing.",
+      "You're the reason why people think crypto is gambling.",
+      "Your trading strategy is about as sophisticated as a coin flip.",
+      "You're not investing, you're just throwing money at random tokens and hoping for the best."
+    ];
+
+    // Add 1-2 random roasts for extra variety (but not too many)
+    if (Math.random() < 0.3) { // 30% chance
+      roasts.push(getRandomRoast(randomGeneralRoasts));
+    }
 
   // TODO: Uncomment these when we use all API routes
   /*

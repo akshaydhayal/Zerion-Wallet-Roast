@@ -20,19 +20,62 @@ export interface ZerionPosition {
   type: string;
   id: string;
   attributes: {
+    parent: string | null;
+    protocol: string | null;
+    name: string;
+    position_type: string;
     quantity: {
+      int: string;
+      decimals: number;
       float: number;
+      numeric: string;
     };
     value: number | null;
+    price: number;
+    changes: {
+      absolute_1d: number;
+      percent_1d: number;
+    } | null;
     fungible_info: {
       name: string;
       symbol: string;
       icon: {
         url: string;
       } | null;
+      flags: {
+        verified: boolean;
+      };
+      implementations: Array<{
+        chain_id: string;
+        address: string;
+        decimals: number;
+      }>;
     };
     flags: {
       displayable: boolean;
+      is_trash: boolean;
+    };
+    updated_at: string;
+    updated_at_block: string | null;
+  };
+  relationships: {
+    chain: {
+      links: {
+        related: string;
+      };
+      data: {
+        type: string;
+        id: string;
+      };
+    };
+    fungible: {
+      links: {
+        related: string;
+      };
+      data: {
+        type: string;
+        id: string;
+      };
     };
   };
 }
@@ -93,6 +136,10 @@ export interface WalletData {
     symbol: string;
     value: number;
     quantity: number;
+    price: number;
+    change24h: number;
+    verified: boolean;
+    icon?: string;
   }>;
   pnl: {
     totalProfit: number;
@@ -112,6 +159,17 @@ export interface WalletData {
     staked: number;
     deposited: number;
   };
+  positions: Array<{
+    name: string;
+    symbol: string;
+    value: number;
+    quantity: number;
+    price: number;
+    change24h: number;
+    verified: boolean;
+    icon?: string;
+    positionType: string;
+  }>;
 }
 
 export interface RoastResult {
