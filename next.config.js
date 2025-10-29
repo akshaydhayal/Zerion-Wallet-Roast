@@ -9,13 +9,16 @@ const nextConfig = {
       tls: false,
     };
     
-    // Suppress warnings for optional dependencies
-    if (!isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'pino-pretty': false,
-      };
-    }
+    // Suppress warnings for optional dependencies (pino-pretty)
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'pino-pretty': false,
+    };
+    
+    // Suppress module resolution warnings for optional dependencies
+    config.ignoreWarnings = [
+      { module: /node_modules\/pino/ },
+    ];
     
     return config;
   },

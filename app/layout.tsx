@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "@solana/wallet-adapter-react-ui/styles.css";
-import { WalletProvider } from "@/components/WalletProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export const metadata: Metadata = {
@@ -10,7 +8,7 @@ export const metadata: Metadata = {
   keywords: ["solana", "wallet", "crypto", "roast", "zerion", "blockchain"],
   openGraph: {
     title: "Wallet Roast - Get Roasted by Your Bags",
-    description: "Connect your wallet and get hilariously roasted based on your crypto trading habits!",
+    description: "Enter your wallet address and get hilariously roasted based on your crypto trading habits!",
     type: "website",
   },
 };
@@ -24,7 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <ThemeProvider>
-          <WalletProvider>{children}</WalletProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>

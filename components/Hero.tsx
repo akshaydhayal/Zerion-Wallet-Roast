@@ -109,7 +109,7 @@ export default function Hero() {
           className="text-sm md:text-base pt-2"
           style={{ color: themeConfig.colors.textSecondary }}
         >
-          Connect your Solana wallet below and prepare to be <span className="font-semibold" style={{ color: themeConfig.colors.accent }}>destroyed</span> 🔥
+          Enter your Solana wallet address below and prepare to be <span className="font-semibold" style={{ color: themeConfig.colors.accent }}>destroyed</span> 🔥
         </motion.p>
       </motion.div>
     </div>

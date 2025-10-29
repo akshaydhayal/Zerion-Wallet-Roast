@@ -1,25 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
 import Hero from "@/components/Hero";
-import WalletConnector from "@/components/WalletConnector";
+import WalletInput from "@/components/WalletInput";
 import RoastGenerator from "@/components/RoastGenerator";
 import Footer from "@/components/Footer";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Home() {
-  const { publicKey, connected } = useWallet();
   const { themeConfig } = useTheme();
   const [showRoast, setShowRoast] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string>("");
 
-  const handleGetRoasted = (address?: string) => {
-    // Use manual address if provided, otherwise use connected wallet
-    const addressToUse = address || (connected && publicKey ? publicKey.toString() : "");
-    
-    if (addressToUse) {
-      setWalletAddress(addressToUse);
+  const handleGetRoasted = (address: string) => {
+    if (address) {
+      setWalletAddress(address);
       setShowRoast(true);
     }
   };
@@ -63,7 +58,7 @@ export default function Home() {
         {!showRoast ? (
           <div className="container mx-auto px-4 py-4">
             <Hero />
-            <WalletConnector onGetRoasted={handleGetRoasted} />
+            <WalletInput onGetRoasted={handleGetRoasted} />
           </div>
         ) : (
           <div className="container mx-auto px-4 py-4">
