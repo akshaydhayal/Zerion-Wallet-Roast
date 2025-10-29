@@ -5,6 +5,8 @@ import { TrendingUp, TrendingDown, DollarSign, Coins, Shield, AlertCircle } from
 import { WalletData } from "@/types";
 import { useTheme } from "@/contexts/ThemeContext";
 import TransactionInsights from "./TransactionInsights";
+import PortfolioChart from "./PortfolioChart";
+import PortfolioInsights from "./PortfolioInsights";
 
 interface WalletAnalysisProps {
   walletData: WalletData;
@@ -40,7 +42,7 @@ export default function WalletAnalysis({ walletData, walletAddress }: WalletAnal
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="w-full max-w-7xl mx-auto px-4 py-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -347,15 +349,35 @@ export default function WalletAnalysis({ walletData, walletAddress }: WalletAnal
           )}
         </motion.div>
 
-        {/* Transaction Insights */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="space-y-6"
-        >
-          <TransactionInsights walletData={walletData} />
-        </motion.div>
+            {/* Portfolio Chart */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="space-y-6 w-full"
+            >
+              <PortfolioChart walletData={walletData} />
+            </motion.div>
+
+            {/* Portfolio Insights */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="space-y-6 w-full"
+            >
+              <PortfolioInsights walletData={walletData} />
+            </motion.div>
+
+            {/* Transaction Insights */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              className="space-y-6"
+            >
+              <TransactionInsights walletData={walletData} />
+            </motion.div>
       </motion.div>
     </div>
   );

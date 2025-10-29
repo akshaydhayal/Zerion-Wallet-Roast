@@ -109,77 +109,74 @@ Try Wallet Roast and see what your bags say about you! 🚀`;
           />
         </div>
 
-        {/* Header Section */}
-        <div className="relative text-center py-6 px-6">
-          <motion.div
-            animate={{ 
-              rotate: [0, 10, -10, 0],
-              scale: [1, 1.1, 1]
-            }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="inline-block mb-4"
-          >
-            <div className="relative">
-              <Flame 
-                className="w-16 h-16 mx-auto drop-shadow-lg" 
-                style={{ color: themeConfig.colors.accent }}
-              />
-              <motion.div
-                animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute inset-0"
-              >
-                <Sparkles 
-                  className="w-16 h-16 mx-auto" 
-                  style={{ color: themeConfig.colors.secondary }}
-                />
-              </motion.div>
-            </div>
-          </motion.div>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-3xl md:text-4xl font-bold mb-3"
-            style={{ color: themeConfig.colors.text }}
-          >
-            Wallet <span 
-              className="text-transparent bg-clip-text"
-              style={{ 
-                backgroundImage: `linear-gradient(to right, ${themeConfig.colors.primary}, ${themeConfig.colors.secondary})` 
+        {/* Header Section - All in one horizontal line */}
+        <div className="relative py-4 px-6">
+          <div className="flex items-center justify-center gap-4">
+            {/* Animated Icon */}
+            <motion.div
+              animate={{ 
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1]
               }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              Roast
-            </span>
-          </motion.h1>
-          
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border"
-            style={{
-              backgroundColor: `${themeConfig.colors.surface}60`,
-              borderColor: themeConfig.colors.border,
-            }}
-          >
-            <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: themeConfig.colors.accent }} />
-            <p className="font-mono text-sm" style={{ color: themeConfig.colors.textSecondary }}>
-              {walletAddress.slice(0, 8)}...{walletAddress.slice(-8)}
-            </p>
-            {isAIRoast !== null && (
-              <div 
-                className="px-2 py-1 rounded-full text-xs font-medium"
-                style={{
-                  backgroundColor: isAIRoast ? `${themeConfig.colors.primary}20` : `${themeConfig.colors.accent}20`,
-                  color: isAIRoast ? themeConfig.colors.primary : themeConfig.colors.accent,
+              <div className="relative">
+                <Flame 
+                  className="w-8 h-8 drop-shadow-lg" 
+                  style={{ color: themeConfig.colors.accent }}
+                />
+                <motion.div
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute inset-0"
+                >
+                  <Sparkles 
+                    className="w-8 h-8" 
+                    style={{ color: themeConfig.colors.secondary }}
+                  />
+                </motion.div>
+              </div>
+            </motion.div>
+            
+            {/* Title */}
+            <h1 
+              className="text-lg md:text-xl font-bold"
+              style={{ color: themeConfig.colors.text }}
+            >
+              Wallet <span 
+                className="text-transparent bg-clip-text"
+                style={{ 
+                  backgroundImage: `linear-gradient(to right, ${themeConfig.colors.primary}, ${themeConfig.colors.secondary})` 
                 }}
               >
-                {isAIRoast ? '🤖 AI' : '📝 Static'}
-              </div>
-            )}
-          </motion.div>
+                Roast
+              </span>
+            </h1>
+            
+            {/* Wallet Address */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-sm border"
+              style={{
+                backgroundColor: `${themeConfig.colors.surface}60`,
+                borderColor: themeConfig.colors.border,
+              }}
+            >
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: themeConfig.colors.accent }} />
+              <p className="font-mono text-sm" style={{ color: themeConfig.colors.textSecondary }}>
+                {walletAddress.slice(0, 6)}...{walletAddress.slice(-6)}
+              </p>
+              {isAIRoast !== null && (
+                <div 
+                  className="px-2 py-1 rounded-full text-xs font-medium"
+                  style={{
+                    backgroundColor: isAIRoast ? `${themeConfig.colors.primary}20` : `${themeConfig.colors.accent}20`,
+                    color: isAIRoast ? themeConfig.colors.primary : themeConfig.colors.accent,
+                  }}
+                >
+                  {isAIRoast ? '🤖' : '📝'}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Main Roast Section */}
@@ -360,19 +357,6 @@ Try Wallet Roast and see what your bags say about you! 🚀`;
           </div>
         </div>
 
-        {/* Footer */}
-        <div 
-          className="text-center py-4 px-6 border-t"
-          style={{ 
-            borderColor: themeConfig.colors.border,
-            backgroundColor: `${themeConfig.colors.surface}40`
-          }}
-        >
-          <p className="text-xs" style={{ color: themeConfig.colors.textSecondary }}>
-            Powered by <span className="font-semibold" style={{ color: themeConfig.colors.primary }}>Zerion API</span> • 
-            Built for <span className="font-semibold" style={{ color: themeConfig.colors.secondary }}>Cypherpunk Hackathon</span>
-          </p>
-        </div>
       </motion.div>
 
       {/* Action Buttons */}
@@ -438,7 +422,7 @@ Try Wallet Roast and see what your bags say about you! 🚀`;
         transition={{ delay: 1.3 }}
         className="text-center mt-6"
       >
-        <div 
+        {/* <div 
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border"
           style={{
             backgroundColor: `${themeConfig.colors.surface}40`,
@@ -449,7 +433,7 @@ Try Wallet Roast and see what your bags say about you! 🚀`;
           <p className="text-sm" style={{ color: themeConfig.colors.textSecondary }}>
             <span className="font-semibold" style={{ color: themeConfig.colors.accent }}>Pro tip:</span> Connect a different wallet to get roasted again!
           </p>
-        </div>
+        </div> */}
       </motion.div>
     </div>
   );

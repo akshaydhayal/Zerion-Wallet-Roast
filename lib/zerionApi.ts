@@ -3,6 +3,8 @@ import {
   ZerionPositionsResponse,
   ZerionPnL,
   ZerionTransactionsResponse,
+  ZerionChartResponse,
+  ChartDataPoint,
   WalletData,
 } from "@/types";
 
@@ -180,6 +182,26 @@ export async function fetchWalletData(walletAddress: string): Promise<WalletData
       console.log("✅ Transactions data received:", transactions);
     } else {
       console.warn("⚠️ Transactions API failed:", transactionsResponse.status);
+    }
+
+    // Fetch chart data (yearly data points)
+    console.log("🔍 Fetching chart data...");
+    const chartUrl = `${PROXY_API_BASE}?address=${walletAddress}&endpoint=chart&period=year`;
+    console.log("🌐 Chart URL:", chartUrl);
+    
+    const chartResponse = await fetch(chartUrl, {
+      method: 'GET',
+      signal: controller.signal,
+    });
+
+    console.log("📡 Chart response status:", chartResponse.status);
+    
+    let chartData: ZerionChartResponse | null = null;
+    if (chartResponse.ok) {
+      chartData = await chartResponse.json();
+      console.log("✅ Chart data received:", chartData);
+    } else {
+      console.warn("⚠️ Chart API failed:", chartResponse.status);
     }
 
     // TODO: Uncomment these when we want to use all routes
@@ -428,6 +450,47 @@ export async function fetchWalletData(walletAddress: string): Promise<WalletData
 
     console.log("📊 Transaction insights:", transactionInsights);
 
+    // Process chart data
+    let processedChartData = undefined;
+    if (chartData && chartData.data && chartData.data.attributes.points) {
+      const points = chartData.data.attributes.points;
+      const processedPoints: ChartDataPoint[] = points.map(([timestamp, value]) => {
+        const date = new Date(timestamp * 1000);
+        return {
+          timestamp,
+          value,
+          date: date.toLocaleDateString(),
+          time: date.toLocaleTimeString()
+        };
+      });
+
+      const firstValue = processedPoints[0]?.value || 0;
+      const lastValue = processedPoints[processedPoints.length - 1]?.value || 0;
+      const totalChange = lastValue - firstValue;
+      const totalChangePercent = firstValue > 0 ? (totalChange / firstValue) * 100 : 0;
+      
+      const values = processedPoints.map(p => p.value);
+      const highestValue = Math.max(...values);
+      const lowestValue = Math.min(...values);
+      
+      // Calculate volatility (standard deviation)
+      const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+      const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+      const volatility = Math.sqrt(variance);
+
+      processedChartData = {
+        period: 'year',
+        points: processedPoints,
+        totalChange,
+        totalChangePercent,
+        highestValue,
+        lowestValue,
+        volatility
+      };
+
+      console.log("📈 Chart data processed:", processedChartData);
+    }
+
     // TODO: Uncomment these when we use all routes
     /*
     const swaps = transactions.data.filter(
@@ -481,6 +544,7 @@ export async function fetchWalletData(walletAddress: string): Promise<WalletData
       distribution,
       positions: allPositions,
       transactionInsights,
+      chartData: processedChartData,
     };
 
     return walletData;

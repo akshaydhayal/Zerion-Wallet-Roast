@@ -31,14 +31,17 @@ export async function GET(request: NextRequest) {
       url = `${ZERION_API_BASE}/wallets/${walletAddress}/portfolio?currency=usd`;
     } else if (endpoint === 'positions') {
       url = `${ZERION_API_BASE}/wallets/${walletAddress}/positions?filter[positions]=only_simple&filter[trash]=only_non_trash&sort=value&page[size]=20&currency=usd`;
-    } else if (endpoint === 'transactions') {
-      url = `${ZERION_API_BASE}/wallets/${walletAddress}/transactions?currency=usd&filter[chain_ids]=solana&filter[trash]=no_filter&page[size]=100`;
-    } else {
-      return NextResponse.json(
-        { error: 'Invalid endpoint' },
-        { status: 400 }
-      );
-    }
+          } else if (endpoint === 'transactions') {
+            url = `${ZERION_API_BASE}/wallets/${walletAddress}/transactions?currency=usd&filter[chain_ids]=solana&filter[trash]=no_filter&page[size]=100`;
+          } else if (endpoint === 'chart') {
+            const chartPeriod = searchParams.get('period') || 'day';
+            url = `${ZERION_API_BASE}/wallets/${walletAddress}/charts/${chartPeriod}?currency=usd`;
+          } else {
+            return NextResponse.json(
+              { error: 'Invalid endpoint' },
+              { status: 400 }
+            );
+          }
 
     console.log('🌐 Proxying request to:', url);
 

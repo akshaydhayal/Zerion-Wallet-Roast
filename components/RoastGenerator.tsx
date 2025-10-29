@@ -169,30 +169,30 @@ export default function RoastGenerator({ walletAddress, onBack }: RoastGenerator
                   borderColor: themeConfig.colors.border,
                 }}
               >
-                <button
-                  onClick={() => setActiveTab('roast')}
-                  className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                    activeTab === 'roast' ? 'shadow-lg' : ''
-                  }`}
-                  style={{
-                    backgroundColor: activeTab === 'roast' ? themeConfig.colors.primary : 'transparent',
-                    color: activeTab === 'roast' ? themeConfig.colors.text : themeConfig.colors.textSecondary,
-                  }}
-                >
-                  🔥 Roast
-                </button>
-                <button
-                  onClick={() => setActiveTab('analysis')}
-                  className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                    activeTab === 'analysis' ? 'shadow-lg' : ''
-                  }`}
-                  style={{
-                    backgroundColor: activeTab === 'analysis' ? themeConfig.colors.primary : 'transparent',
-                    color: activeTab === 'analysis' ? themeConfig.colors.text : themeConfig.colors.textSecondary,
-                  }}
-                >
-                  📊 Analysis
-                </button>
+                     <button
+                       onClick={() => setActiveTab('roast')}
+                       className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                         activeTab === 'roast' ? 'shadow-lg' : ''
+                       }`}
+                       style={{
+                         backgroundColor: activeTab === 'roast' ? themeConfig.colors.primary : 'transparent',
+                         color: activeTab === 'roast' ? themeConfig.colors.text : themeConfig.colors.textSecondary,
+                       }}
+                     >
+                       🔥 Wallet Roast
+                     </button>
+                     <button
+                       onClick={() => setActiveTab('analysis')}
+                       className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                         activeTab === 'analysis' ? 'shadow-lg' : ''
+                       }`}
+                       style={{
+                         backgroundColor: activeTab === 'analysis' ? themeConfig.colors.primary : 'transparent',
+                         color: activeTab === 'analysis' ? themeConfig.colors.text : themeConfig.colors.textSecondary,
+                       }}
+                     >
+                       📊 Wallet Analysis
+                     </button>
               </div>
             </div>
 

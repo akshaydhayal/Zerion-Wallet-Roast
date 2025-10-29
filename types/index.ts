@@ -206,6 +206,28 @@ export interface ZerionTransactionsResponse {
 }
 
 // Roast Data Types
+export interface ZerionChartResponse {
+  links: {
+    self: string;
+  };
+  data: {
+    type: string;
+    id: string;
+    attributes: {
+      begin_at: string;
+      end_at: string;
+      points: Array<[number, number]>; // [timestamp, value]
+    };
+  };
+}
+
+export interface ChartDataPoint {
+  timestamp: number;
+  value: number;
+  date: string;
+  time: string;
+}
+
 export interface WalletData {
   portfolioValue: number;
   topHoldings: Array<{
@@ -266,6 +288,15 @@ export interface WalletData {
       riskLevel: 'low' | 'medium' | 'high';
       preferredOperationTypes: string[];
     };
+  };
+  chartData?: {
+    period: string;
+    points: ChartDataPoint[];
+    totalChange: number;
+    totalChangePercent: number;
+    highestValue: number;
+    lowestValue: number;
+    volatility: number;
   };
 }
 
