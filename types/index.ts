@@ -2,16 +2,20 @@
 export interface ZerionPortfolio {
   data: {
     attributes: {
-      total: {
-        quantity: string;
+      total_balance?: string | number;
+      total?: {
+        quantity?: string | number;
+        value?: string | number;
+        balance?: string | number;
       };
       positions_distribution_by_type: {
         wallet: number;
         deposited: number;
         staked: number;
-        locked: number;
+        locked?: number;
       };
-      positions_distribution_by_chain: Record<string, number>;
+      positions_distribution_by_chain?: Record<string, number>;
+      [key: string]: any; // Allow other fields
     };
   };
 }
@@ -104,20 +108,93 @@ export interface ZerionTransaction {
   type: string;
   id: string;
   attributes: {
+    address: string;
     operation_type: string;
     hash: string;
     mined_at: string;
+    mined_at_block: number;
+    sent_from: string;
+    sent_to: string;
     status: string;
-    transfers: Array<{
-      fungible_info?: {
+    nonce: number;
+    fee: {
+      fungible_info: {
+        id: string;
         name: string;
         symbol: string;
+        icon?: {
+          url: string;
+        };
+        flags: {
+          verified: boolean;
+        };
+        implementations: Array<{
+          chain_id: string;
+          address: string;
+          decimals: number;
+        }>;
       };
-      quantity?: {
+      quantity: {
+        int: string;
+        decimals: number;
         float: number;
+        numeric: string;
+      };
+      price: number;
+      value: number;
+    };
+    transfers: Array<{
+      fungible_info?: {
+        id: string;
+        name: string;
+        symbol: string;
+        icon?: {
+          url: string;
+        };
+        flags?: {
+          verified: boolean;
+        };
+        implementations?: Array<{
+          chain_id: string;
+          address: string;
+          decimals: number;
+        }>;
       };
       direction: string;
+      quantity?: {
+        int: string;
+        decimals: number;
+        float: number;
+        numeric: string;
+      };
+      value?: number;
+      price?: number;
+      sender?: string;
+      recipient?: string;
+      act_id?: string;
     }>;
+    approvals: any[];
+    flags: {
+      is_trash: boolean;
+    };
+    acts: Array<{
+      id: string;
+      type: string;
+      application_metadata?: {
+        contract_address: string;
+      };
+    }>;
+  };
+  relationships: {
+    chain: {
+      links: {
+        related: string;
+      };
+      data: {
+        type: string;
+        id: string;
+      };
+    };
   };
 }
 
@@ -170,6 +247,26 @@ export interface WalletData {
     icon?: string;
     positionType: string;
   }>;
+  transactionInsights: {
+    totalTransactions: number;
+    successfulTransactions: number;
+    failedTransactions: number;
+    totalFeesPaid: number;
+    averageFeePerTransaction: number;
+    mostUsedOperationType: string;
+    recentActivity: number; // last 7 days
+    topTokensTraded: Array<{
+      symbol: string;
+      name: string;
+      count: number;
+      totalValue: number;
+    }>;
+    tradingPatterns: {
+      isActiveTrader: boolean;
+      riskLevel: 'low' | 'medium' | 'high';
+      preferredOperationTypes: string[];
+    };
+  };
 }
 
 export interface RoastResult {

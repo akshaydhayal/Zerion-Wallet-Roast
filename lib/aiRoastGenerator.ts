@@ -55,7 +55,7 @@ export async function generateAIRoast(walletData: WalletData): Promise<RoastResu
 }
 
 function createRoastPrompt(walletData: WalletData): string {
-  const { portfolioValue, distribution } = walletData;
+  const { portfolioValue, distribution, topHoldings, positions, transactionInsights } = walletData;
   
   // Add some randomness to make each roast different
   const randomSeed = Math.random();
@@ -91,6 +91,40 @@ function createRoastPrompt(walletData: WalletData): string {
     - Staked: ${distribution.staked.toFixed(2)}%
     - Deposited: ${distribution.deposited.toFixed(2)}%
   
+  ${topHoldings && topHoldings.length > 0 ? `
+  - Top Holdings (${topHoldings.length} tokens):
+    ${topHoldings.slice(0, 5).map((holding, i) => 
+      `${i + 1}. ${holding.name} (${holding.symbol}): $${holding.value.toFixed(2)} (${holding.change24h >= 0 ? '+' : ''}${holding.change24h.toFixed(2)}% 24h)`
+    ).join('\n    ')}
+  ` : ''}
+  
+  ${positions && positions.length > 0 ? `
+  - Total Positions: ${positions.length}
+    - Verified Tokens: ${positions.filter(p => p.verified).length}
+    - Unverified Tokens: ${positions.filter(p => !p.verified).length}
+    - Zero Value Positions: ${positions.filter(p => p.value === 0 || p.value === null).length}
+  ` : ''}
+  
+  ${transactionInsights ? `
+  - Transaction Insights:
+    - Total Transactions: ${transactionInsights.totalTransactions}
+    - Successful: ${transactionInsights.successfulTransactions} (${transactionInsights.totalTransactions > 0 ? ((transactionInsights.successfulTransactions / transactionInsights.totalTransactions) * 100).toFixed(1) : 0}%)
+    - Failed: ${transactionInsights.failedTransactions}
+    - Total Fees Paid: $${transactionInsights.totalFeesPaid.toFixed(2)}
+    - Average Fee: $${transactionInsights.averageFeePerTransaction.toFixed(4)}
+    - Recent Activity (7 days): ${transactionInsights.recentActivity} transactions
+    - Most Used Operation: ${transactionInsights.mostUsedOperationType}
+    - Risk Level: ${transactionInsights.tradingPatterns.riskLevel}
+    - Active Trader: ${transactionInsights.tradingPatterns.isActiveTrader ? 'Yes' : 'No'}
+    ${transactionInsights.topTokensTraded && transactionInsights.topTokensTraded.length > 0 ? `
+    - Top Traded Tokens:
+      ${transactionInsights.topTokensTraded.slice(0, 3).map((token, i) => 
+        `${i + 1}. ${token.symbol}: ${token.count} trades, $${token.totalValue.toFixed(2)} total`
+      ).join('\n      ')}
+    ` : ''}
+  ` : ''}
+  
+  Use ALL this data to create a comprehensive, specific roast. Reference specific tokens, transaction patterns, fees, and holdings.
   Make sure the JSON is valid and complete. Be creative and make each roast unique!`;
   
   return prompt;

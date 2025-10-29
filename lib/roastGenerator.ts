@@ -18,7 +18,7 @@ export function generateStaticRoast(walletData: WalletData): RoastResult {
   let personalityEmoji = "";
   let badge = "";
 
-  const { portfolioValue, topHoldings, pnl, transactionStats, tradingFrequency, distribution, positions } = walletData;
+  const { portfolioValue, topHoldings, pnl, transactionStats, tradingFrequency, distribution, positions, transactionInsights } = walletData;
 
   // DYNAMIC MAIN ROAST - MULTIPLE VARIATIONS PER RANGE
   let mainRoast = "";
@@ -207,7 +207,74 @@ export function generateStaticRoast(walletData: WalletData): RoastResult {
     }
   }
 
-    // Positions-based roasts
+    // Top Holdings-based roasts (using fungible positions API data)
+    if (topHoldings && topHoldings.length > 0) {
+      const topHolding = topHoldings[0];
+      const topHoldingPercent = portfolioValue > 0 ? (topHolding.value / portfolioValue * 100) : 0;
+      
+      // Meme coin roasts
+      const memeKeywords = ['bonk', 'shib', 'doge', 'pepe', 'wojak', 'chad', 'moonshot', 'moon', 'lambo'];
+      const isMemeCoin = memeKeywords.some(keyword => 
+        topHolding.symbol.toLowerCase().includes(keyword) || 
+        topHolding.name.toLowerCase().includes(keyword)
+      );
+      
+      if (isMemeCoin) {
+        const memeRoasts = [
+          `${topHolding.symbol} is your top holding? You're not investing, you're memeing.`,
+          `Your biggest bag is ${topHolding.symbol}? I respect the degenerate energy.`,
+          `${topHolding.symbol} as your top holding. You're either ahead of the curve or way behind it.`,
+          `Top holding: ${topHolding.symbol}. You're the reason why people think crypto is a joke.`
+        ];
+        roasts.push(getRandomRoast(memeRoasts));
+        score -= 10;
+      }
+      
+      // Overconcentration roasts
+      if (topHoldingPercent > 80) {
+        const concentrationRoasts = [
+          `${topHoldingPercent.toFixed(0)}% in ${topHolding.symbol}? That's not diversification, that's a death wish.`,
+          `You've got ${topHoldingPercent.toFixed(0)}% in one token. One pump and dump away from rekt city.`,
+          `${topHoldingPercent.toFixed(0)}% in ${topHolding.symbol}. You're not a trader, you're a gambler.`,
+          `Putting ${topHoldingPercent.toFixed(0)}% in ${topHolding.symbol}? Even casinos have better odds.`
+        ];
+        roasts.push(getRandomRoast(concentrationRoasts));
+        score -= 15;
+      }
+      
+      // Price change roasts
+      if (topHolding.change24h < -10) {
+        const lossRoasts = [
+          `Your top holding ${topHolding.symbol} is down ${Math.abs(topHolding.change24h).toFixed(1)}% today. Ouch.`,
+          `${topHolding.symbol} dropped ${Math.abs(topHolding.change24h).toFixed(1)}%? Your biggest bag is bleeding.`,
+          `Your ${topHolding.symbol} position is down ${Math.abs(topHolding.change24h).toFixed(1)}%. Maybe try not buying tops?`,
+          `${topHolding.symbol} is down ${Math.abs(topHolding.change24h).toFixed(1)}% today. Your portfolio is crying.`
+        ];
+        roasts.push(getRandomRoast(lossRoasts));
+        score -= 10;
+      } else if (topHolding.change24h > 20) {
+        const pumpRoasts = [
+          `${topHolding.symbol} is up ${topHolding.change24h.toFixed(1)}%? Did you finally buy the right thing?`,
+          `Your ${topHolding.symbol} is pumping ${topHolding.change24h.toFixed(1)}%! Time to sell or diamond hands?`,
+          `${topHolding.symbol} up ${topHolding.change24h.toFixed(1)}%? You're either lucky or actually know what you're doing.`
+        ];
+        roasts.push(getRandomRoast(pumpRoasts));
+        score += 5;
+      }
+      
+      // Large top holding value roasts
+      if (topHolding.value > 10000) {
+        const whaleRoasts = [
+          `$${topHolding.value.toFixed(0)} in ${topHolding.symbol}? Someone's been holding.`,
+          `Your ${topHolding.symbol} position is worth ${topHolding.value.toFixed(0)}. Whale alert!`,
+          `$${topHolding.value.toFixed(0)} in ${topHolding.symbol}? That's either impressive or you're about to get rekt.`
+        ];
+        roasts.push(getRandomRoast(whaleRoasts));
+        score += 10;
+      }
+    }
+
+    // Positions-based roasts (using fungible positions API data)
     if (positions && positions.length > 0) {
       const verifiedTokens = positions.filter(pos => pos.verified).length;
       const unverifiedTokens = positions.filter(pos => !pos.verified).length;
@@ -244,6 +311,151 @@ export function generateStaticRoast(walletData: WalletData): RoastResult {
         ];
         roasts.push(getRandomRoast(singleTokenRoasts));
         score += 5;
+      }
+      
+      // Zero-value positions roast
+      const zeroValuePositions = positions.filter(pos => pos.value === 0 || pos.value === null).length;
+      if (zeroValuePositions > 0) {
+        const zeroValueRoasts = [
+          `You've got ${zeroValuePositions} tokens worth $0. That's not a portfolio, that's a graveyard.`,
+          `${zeroValuePositions} positions worth nothing? You're collecting digital dust.`,
+          `You're holding ${zeroValuePositions} worthless tokens. At least they're not taking up physical space.`,
+          `${zeroValuePositions} $0 positions. Your portfolio is like a museum of bad decisions.`
+        ];
+        roasts.push(getRandomRoast(zeroValueRoasts));
+        score -= 10;
+      }
+    }
+
+    // Transaction-based roasts (using transactions API data)
+    if (transactionInsights) {
+      const { totalTransactions, failedTransactions, totalFeesPaid, recentActivity, tradingPatterns, topTokensTraded, mostUsedOperationType, averageFeePerTransaction } = transactionInsights;
+      const successRate = totalTransactions > 0 ? (transactionInsights.successfulTransactions / totalTransactions) * 100 : 0;
+      
+      // High failure rate roasts
+      if (successRate < 70 && totalTransactions > 5) {
+        const failureRoasts = [
+          `${Math.round(100 - successRate)}% failure rate? You're not trading, you're just burning money.`,
+          `You've failed ${failedTransactions} transactions. At this point, you're just paying for expensive lessons.`,
+          `${Math.round(100 - successRate)}% of your transactions fail. Maybe try reading the instructions first?`,
+          `You're so bad at this that even failed transactions are learning from your mistakes.`
+        ];
+        roasts.push(getRandomRoast(failureRoasts));
+        score -= 15;
+      }
+      
+      // High fees roasts
+      if (totalFeesPaid > 10) {
+        const feeRoasts = [
+          `You've paid ${totalFeesPaid.toFixed(2)} in fees. That's more than most people spend on groceries.`,
+          `${totalFeesPaid.toFixed(2)} in fees? You're single-handedly keeping the network alive.`,
+          `Your fee payments could fund a small country. At least you're contributing to the ecosystem.`,
+          `You've paid more in fees than most people's portfolios. That's... impressive?`
+        ];
+        roasts.push(getRandomRoast(feeRoasts));
+        score -= 5;
+      }
+      
+      // Average fee per transaction roasts
+      if (averageFeePerTransaction > 0.01 && totalTransactions > 10) {
+        const avgFeeRoasts = [
+          `$${averageFeePerTransaction.toFixed(4)} average fee per transaction? You're paying premium prices for basic moves.`,
+          `Your average fee is ${averageFeePerTransaction.toFixed(4)}. You're not optimizing, you're just throwing money away.`,
+          `$${averageFeePerTransaction.toFixed(4)} per transaction? That's more than some people make per hour.`
+        ];
+        roasts.push(getRandomRoast(avgFeeRoasts));
+        score -= 5;
+      }
+      
+      // Operation type roasts
+      if (mostUsedOperationType) {
+        if (mostUsedOperationType === 'execute') {
+          const executeRoasts = [
+            "Your favorite operation is 'execute'? You're executing alright... executing your profits.",
+            "Most used operation: execute. You're executing transactions faster than your brain can process.",
+            "Execute operations? More like executing your portfolio value."
+          ];
+          roasts.push(getRandomRoast(executeRoasts));
+          score -= 5;
+        } else if (mostUsedOperationType === 'receive') {
+          const receiveRoasts = [
+            "Most operations are 'receive'? You're not a trader, you're a charity case.",
+            "Favorite operation: receive. You're collecting handouts, not making moves.",
+            "Receiving is your main activity? You're not trading, you're just accepting donations."
+          ];
+          roasts.push(getRandomRoast(receiveRoasts));
+          score -= 10;
+        } else if (mostUsedOperationType === 'send') {
+          const sendRoasts = [
+            "Most operations are 'send'? You're sending money away faster than you make it.",
+            "Favorite operation: send. You're not investing, you're donating.",
+            "Sending is your main activity? You're giving away your money more than trading it."
+          ];
+          roasts.push(getRandomRoast(sendRoasts));
+          score -= 5;
+        }
+      }
+      
+      // Top tokens traded roasts
+      if (topTokensTraded && topTokensTraded.length > 0) {
+        const topTradedToken = topTokensTraded[0];
+        if (topTradedToken.count > 20) {
+          const frequentTradingRoasts = [
+            `You've traded ${topTradedToken.symbol} ${topTradedToken.count} times. You're either a day trader or obsessed.`,
+            `${topTradedToken.count} trades of ${topTradedToken.symbol}? You're not trading, you're stalking a token.`,
+            `You've traded ${topTradedToken.symbol} ${topTradedToken.count} times. That's commitment... or addiction.`
+          ];
+          roasts.push(getRandomRoast(frequentTradingRoasts));
+          score -= 5;
+        }
+      }
+      
+      // Inactive trader roasts
+      if (recentActivity === 0 && totalTransactions > 0) {
+        const inactiveRoasts = [
+          "Zero activity in the last week. Did you forget you have a wallet?",
+          "No recent transactions. Are you hibernating or just gave up?",
+          "Your wallet is gathering dust faster than a museum exhibit.",
+          "Last activity: never. Your wallet is more inactive than a sloth on sedatives."
+        ];
+        roasts.push(getRandomRoast(inactiveRoasts));
+        score -= 10;
+      }
+      
+      // Overactive trader roasts
+      if (recentActivity > 50) {
+        const overactiveRoasts = [
+          `${recentActivity} transactions in a week? You need help, not more tokens.`,
+          "You're trading so much, even day traders think you need to chill.",
+          `${recentActivity} transactions? Your finger must be permanently stuck on the buy button.`,
+          "You're not trading, you're having a digital seizure."
+        ];
+        roasts.push(getRandomRoast(overactiveRoasts));
+        score -= 5;
+      }
+      
+      // Risk level roasts
+      if (tradingPatterns.riskLevel === 'high') {
+        const riskRoasts = [
+          "High risk trader? More like high risk of losing everything.",
+          "Your risk tolerance is higher than a skydiver without a parachute.",
+          "You're not a risk taker, you're a risk collector.",
+          "Your risk level is so high, even casinos are concerned."
+        ];
+        roasts.push(getRandomRoast(riskRoasts));
+        score -= 10;
+      }
+      
+      // Low activity roasts
+      if (totalTransactions === 0) {
+        const noActivityRoasts = [
+          "Zero transactions. Your wallet is more empty than a politician's promises.",
+          "No transactions? Even a rock has more activity than your wallet.",
+          "Your wallet is so inactive, it's practically in a coma.",
+          "Zero activity. Your wallet is the digital equivalent of a ghost town."
+        ];
+        roasts.push(getRandomRoast(noActivityRoasts));
+        score -= 20;
       }
     }
 

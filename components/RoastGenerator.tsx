@@ -37,7 +37,7 @@ export default function RoastGenerator({ walletAddress, onBack }: RoastGenerator
       
       // Check if AI is available before generating
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-      const hasAI = apiKey && apiKey !== 'your_gemini_key_here';
+      const hasAI: boolean | null = apiKey && apiKey !== 'your_gemini_key_here' ? true : null;
       
       // Generate roast based on wallet data (now async with AI)
       const roastResult = await generateRoast(fetchedWalletData);

@@ -11,7 +11,7 @@ interface RoastCardProps {
   roast: RoastResult;
   walletAddress: string;
   onRoastAgain?: () => void;
-  isAIRoast?: boolean;
+  isAIRoast?: boolean | null;
 }
 
 export default function RoastCard({ roast, walletAddress, onRoastAgain, isAIRoast }: RoastCardProps) {

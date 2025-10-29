@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Mark this route as dynamic
+export const dynamic = 'force-dynamic';
+
 const ZERION_API_BASE = 'https://api.zerion.io/v1';
 const API_KEY = process.env.NEXT_PUBLIC_ZERION_API_KEY;
 
@@ -28,6 +31,8 @@ export async function GET(request: NextRequest) {
       url = `${ZERION_API_BASE}/wallets/${walletAddress}/portfolio?currency=usd`;
     } else if (endpoint === 'positions') {
       url = `${ZERION_API_BASE}/wallets/${walletAddress}/positions?filter[positions]=only_simple&filter[trash]=only_non_trash&sort=value&page[size]=20&currency=usd`;
+    } else if (endpoint === 'transactions') {
+      url = `${ZERION_API_BASE}/wallets/${walletAddress}/transactions?currency=usd&filter[chain_ids]=solana&filter[trash]=no_filter&page[size]=100`;
     } else {
       return NextResponse.json(
         { error: 'Invalid endpoint' },

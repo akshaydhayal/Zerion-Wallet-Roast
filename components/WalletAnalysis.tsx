@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, DollarSign, Coins, Shield, AlertCircle } from "lucide-react";
 import { WalletData } from "@/types";
 import { useTheme } from "@/contexts/ThemeContext";
+import TransactionInsights from "./TransactionInsights";
 
 interface WalletAnalysisProps {
   walletData: WalletData;
@@ -344,6 +345,16 @@ export default function WalletAnalysis({ walletData, walletAddress }: WalletAnal
               And {walletData.positions.length - 6} more positions...
             </p>
           )}
+        </motion.div>
+
+        {/* Transaction Insights */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="space-y-6"
+        >
+          <TransactionInsights walletData={walletData} />
         </motion.div>
       </motion.div>
     </div>
