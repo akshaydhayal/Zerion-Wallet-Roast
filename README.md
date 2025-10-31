@@ -1,5 +1,7 @@
 # 🔥 Wallet Roast - Get Roasted by Your Bags
 
+Live Project Link: [https://zerion-wallet-roast.vercel.app/](https://zerion-wallet-roast.vercel.app/)
+
 A humorous AI-driven dApp that analyzes your Solana wallet and roasts you mercilessly based on your onchain behavior. Built for the **Colosseum Cypherpunk Hackathon** using the **Zerion API**.
 
 ![Wallet Roast Banner](https://img.shields.io/badge/Built%20with-Zerion%20API-purple?style=for-the-badge)
@@ -26,13 +28,23 @@ Wallet Roast is a social and entertaining consumer application that leverages th
 - **🎨 Beautiful UI**: Stunning gradients, smooth animations, and glassmorphism effects
 - **⚡ Fast & Responsive**: Built with Next.js 14 and optimized for performance
 
-## 🚀 Live Demo
+## Website Demo
 
-[Coming Soon - Will be deployed on Vercel]
+![Mission Dashboard](https://github.com/akshaydhayal/Zerion-Wallet-Roast/blob/main/roast%20assets/Screenshot%202025-10-31%20135033.png)
+
+*Figure 1: Home Page.*
+
+![Mission Details](https://github.com/akshaydhayal/Zerion-Wallet-Roast/blob/main/roast%20assets/Wallet-Roast-Get-Roasted-by-Your-Bags.png)
+
+*Figure 2: Wallet Roast Page*
+
+![Mission Details](https://github.com/akshaydhayal/Zerion-Wallet-Roast/blob/main/roast%20assets/Wallet-Roast-Get-Roasted-by-Your-Bags%20(1).png)
+
+*Figure 2: Wallet Analysis Page*
 
 ## 🎥 Demo Video
 
-[Coming Soon - Max 5 minutes showcasing features and user flow]
+[https://www.loom.com/share/7958effc7ecd4721bbe2eb7c44b3606a](https://www.loom.com/share/7958effc7ecd4721bbe2eb7c44b3606a)
 
 ## 🛠️ Tech Stack
 
