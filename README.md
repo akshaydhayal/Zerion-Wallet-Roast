@@ -146,11 +146,6 @@ Retrieves recent transactions for activity analysis.
 - **`RoastCard.tsx`**: Beautiful roast display with stats and sharing
 - **`LoadingAnimation.tsx`**: Engaging loading screen during data fetch
 
-### Services
-
-- **`lib/zerionApi.ts`**: Zerion API integration and data fetching
-- **`lib/roastGenerator.ts`**: Roast generation algorithm based on wallet data
-- **`types/index.ts`**: TypeScript type definitions
 
 ## 🎯 Roast Algorithm
 
@@ -199,55 +194,6 @@ The Wallet Score (0-100) is calculated based on:
 - **💎 Diamond Hands**: True HODLer, never sells
 - **👻 Crypto Ghost**: Inactive wallet, possibly lost password
 
-## 📱 Features Showcase
-
-### Wallet Connection
-- Multi-wallet support (Phantom, Solflare, Torus, Ledger)
-- Auto-connect on return visits
-- Beautiful connection modal
-
-### Roast Display
-- Main roast with fire animations
-- Multiple sub-roasts for comprehensive analysis
-- Personality type with emoji
-- Wallet score with color-coded indicator
-- Achievement badge
-
-### Social Sharing
-- Native share API integration
-- Download roast as high-quality PNG
-- Twitter/X optimized text
-- Shareable roast cards
-
-### UI/UX
-- Smooth page transitions with Framer Motion
-- Glassmorphism effects
-- Animated gradients
-- Responsive design (mobile-first)
-- Loading states with entertaining messages
-- Error handling with retry options
-
-## 🎨 Design Philosophy
-
-- **Fun First**: Crypto is serious enough, let's have fun
-- **Beautiful**: Modern UI with gradients, animations, and blur effects
-- **Accessible**: Works on all devices, all wallets, all users
-- **Fast**: Optimized loading, lazy loading, and code splitting
-- **Engaging**: Every interaction feels smooth and delightful
-
-## 🔒 Privacy & Security
-
-- **No Data Storage**: We don't store any wallet data
-- **Read-Only**: Only reads wallet data, never makes transactions
-- **Open Source**: All code is public for transparency
-- **Secure**: No private keys ever requested or stored
-
-## 🐛 Known Limitations
-
-- Zerion API rate limits on free tier
-- Some Solana-specific features may have limited data
-- Transaction history limited to last 100 transactions
-- PnL calculations use FIFO method
 
 ## 🚧 Future Improvements
 
@@ -273,45 +219,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-## 📞 Support & Contact
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/wallet-roast/issues)
-- **Twitter**: [@yourhandle](https://twitter.com/yourhandle)
-- **Email**: your.email@example.com
-
-## 🙏 Acknowledgments
-
-- **Zerion** for the amazing API and comprehensive blockchain data
-- **Colosseum** for hosting the Cypherpunk Hackathon
-- **Solana** for the blazing fast blockchain
-- **Next.js** team for the awesome framework
-- All the degens who inspired this project 😄
-
-## 📝 Hackathon Submission
-
-This project was built for the **Colosseum Cypherpunk Hackathon - Zerion API Track**.
-
-### Submission Checklist
-
-- ✅ Deployed and functional application
-- ✅ Uses Zerion API comprehensively
-- ✅ Clear concept and target users
-- ✅ Demo video (max 5 minutes)
-- ✅ GitHub repository with all code
-- ✅ Documentation in English
-
-### Innovation
-
-Wallet Roast takes a unique approach to onchain data by making it **entertaining and social**. Instead of boring analytics, users get hilariously roasted based on their trading behavior, making crypto data accessible and fun for everyone.
-
-### Impact
-
-This addresses the real need for **engagement** in crypto apps. Most portfolio trackers are dry and boring. Wallet Roast makes checking your wallet fun, shareable, and viral-ready.
-
----
-
-**Built with 🔥 for the Cypherpunk Hackathon**
-
-**Powered by Zerion API** 💜
-
